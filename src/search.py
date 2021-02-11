@@ -18,6 +18,8 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+# user made functions
+
 
 class SearchProblem:
     """
@@ -82,11 +84,13 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    # TODO
+    print("Start:", problem.getStartState()) # string, like dict look up
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState())) # string, like dict look up
+    print("Start's successors:", problem.getSuccessors(problem.getStartState())) # children
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
