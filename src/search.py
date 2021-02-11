@@ -87,16 +87,48 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     # TODO
-    print("Start:", problem.getStartState()) # string, like dict look up
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState())) # string, like dict look up
-    print("Start's successors:", problem.getSuccessors(problem.getStartState())) # children
+    current_node = None
+    open_nodes = [problem.getStartState()]
+    open_paths = []
+    closed = [] # return me
 
-    util.raiseNotDefined()
+    while(open_nodes != []):                                    #While there's no open nodes
+        current_node = open_nodes.pop(0)                        #remove the leftmost state from open, call it current_node
+        if(problem.isGoalState(current_node)):                  #If current_node is a goal then return the NODE
+            return closed
+        container = problem.getSuccessors(current_node)         #Otherwisem generate the children of current_node
+        closed.append(current_node)                             #put current_node on closed
+        temp = []
+        for element in container:
+            node, path, cost = element
+            if node not in open_nodes and node not in closed:   #discard children of current_node if already on open or closed
+                temp.insert(0, node)                            #put remaining children on left end of open
+        open_nodes[:0] = temp                                   # prepend the contents of the lookup while removing duplicates from both containers
+
+    return []
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    current_node = None
+    open_nodes = [problem.getStartState()]
+    open_paths = []
+    closed = [] # return me
+
+    while(open_nodes != []):                                    #While there's no open nodes
+        current_node = open_nodes.pop(0)                        #remove the leftmost state from open, call it current_node
+        if(problem.isGoalState(current_node)):                  #If current_node is a goal then return the NODE
+            return closed
+        container = problem.getSuccessors(current_node)         #Otherwisem generate the children of current_node
+        closed.append(current_node)                             #put current_node on closed
+        temp = []
+        for element in container:
+            node, path, cost = element
+            if node not in open_nodes and node not in closed:   #discard children of current_node if already on open or closed
+                temp.append(node)                               #put remaining children on left end of open
+        open_nodes.extend(temp)                                   # prepend the contents of the lookup while removing duplicates from both containers
+
+    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
