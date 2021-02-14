@@ -101,6 +101,9 @@ def depthFirstSearch(problem):
         if(iterations == depth_limit):
             print(f'[WARNING] Depth limit of {depth_limit} has been reached, cowardly refusing')
             break
+        if(len(open_nodes) >= 25):
+            print(f'[ERROR] Program seems to be creating an infinite loop, please abort')
+            break
         print(f'current dead ends {dead_ends}')
         print(f'current open nodes {open_nodes}')
         print(f'current paths: {paths}')
