@@ -10,15 +10,15 @@ closed <- can no longer travel to
 Please refer to L02, part 2 at 12:45 for further details
 """
 
-graph = {
-    "A": ["B", "C"],
-    "B": ["D", "E"],
-    "C": ["X", "Y"],
-    "D": [],
-    "E": [],
-    "X": [],
-    "Y": []
-}
+# graph = {
+    # "A": ["B", "C"],
+    # "B": ["D", "E"],
+    # "C": ["X", "Y"],
+    # "D": [],
+    # "E": [],
+    # "X": [],
+    # "Y": []
+# }
 
 def l_union(a: list, b: list):
     # source : https://stackoverflow.com/questions/9792664/converting-a-list-to-a-set-changes-element-order
@@ -51,10 +51,3 @@ def dfs(G: dict, S: list, GD: list) -> bool: # -> (TYPE BEING RETURNED)
         closed.append(X) # current node exhausted
 
     return False
-
-resultant = dfs(graph, ["A"], ["X"])
-
-if(resultant):
-    print("[INFO] We found a result")
-else:
-    print("[ERROR] We could not find a result")
