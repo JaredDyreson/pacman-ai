@@ -91,26 +91,28 @@ def depthFirstSearch(problem):
     current_node = None
     open_nodes = [(problem.getStartState(), None)]
     closed = [] # return me 
-    paths = [] # stack based approach
+    answer_path = [] # stack based approach
     dead_ends = []
 
     depth_limit = 15
     iterations = 0
 
     while(open_nodes):                                    #While there's no open nodes
-        if(iterations == depth_limit):
-            print(f'[WARNING] Depth limit of {depth_limit} has been reached, cowardly refusing')
-            break
-        if(len(open_nodes) >= 25):
-            print(f'[ERROR] Program seems to be creating an infinite loop, please abort')
-            break
-        print(f'current dead ends {dead_ends}')
-        print(f'current open nodes {open_nodes}')
-        print(f'current paths: {paths}')
+        # if(iterations == depth_limit):
+            # print(f'[WARNING] Depth limit of {depth_limit} has been reached, cowardly refusing')
+            # break
+        # if(len(open_nodes) >= 25):
+            # print(f'[ERROR] Program seems to be creating an infinite loop, please abort')
+            # break
+
+        # print(f'current dead ends {dead_ends}')
+        # print(f'current open nodes {open_nodes}')
+        # print(f'current answer_path: {answer_path}')
+
         current_node, current_path = open_nodes.pop(0)                        #remove the leftmost state from open, call it current_node
         if(problem.isGoalState(current_node)):                  #If current_node is a goal then return the NODE
-            paths.append(current_path)
-            return paths
+            answer_path.append(current_path)
+            return answer_path
         if(current_node in dead_ends):
             continue
 
@@ -126,20 +128,24 @@ def depthFirstSearch(problem):
 
             dead_ends.insert(0, current_node)
 
-        if(current_node != problem.getStartState() and successors and current_path and current_path not in paths):
-            paths.append(current_path)
+        if(current_node != problem.getStartState() and
+            successors and
+            current_path):
+            # current_path not in answer_path):
+            answer_path.append(current_path)
 
         for state in successors:
-            # if we put path in the paths container, we unconditionally do so
+            # if we put path in the answer_path container, we unconditionally do so
             # this will not work because we might not have processed all nodes in the queue to make a correct judgement
             node, path, cost = state
             if(node in dead_ends):
                 continue
             # put remaining children on left most end of the open queue
-            holding.insert(0, (node, path))
+            if(node not in open_nodes and node not in closed):
+                holding.insert(0, (node, path))
 
             # prepend the contents of the lookup while removing duplicates from both containers
-            open_nodes[:0] = l_union(holding, open_nodes)
+        open_nodes[:0] = l_union(holding, open_nodes)
             # discard children of current_node if already on open or closed
         iterations+=1
     return []
@@ -149,7 +155,56 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # TODO : since DFS and BFS are nearly identical in execution, please don't mind the duplicated code
+
+    current_node = None
+    open_nodes = [(problem.getStartState(), None)]
+    closed = []
+    answer_path = []
+
+    while(open_nodes):
+        current_node, current_path = open_nodes.pop(0)
+        holding = []
+
+        if(problem.isGoalState(current_node)):
+            answer_path.append(current_path)
+            return answer_path
+
+        successors = problem.getSuccessors(current_node)         #Otherwisem generate the children of current_node
+
+        if(current_node != problem.getStartState() and
+            successors and
+            current_path and
+            current_path not in answer_path):
+            answer_path.append(current_path)
+
+        if(current_node in open_nodes or current_node in closed):
+            # discard the children
+            successors = []
+
+        closed.append(current_node)
+
+        for state in successors:
+            # if we put path in the answer_path container, we unconditionally do so
+            # this will not work because we might not have processed all nodes in the queue to make a correct judgement
+            node, path, cost = state
+            # put remaining children on left most end of the open queue
+            # if(node not in open_nodes and node not in closed):
+            # holding.insert(0, (node, path))
+            holding.append((node, path))
+
+            # prepend the contents of the lookup while removing duplicates from both containers
+        # open_nodes[:0] = l_union(holding, open_nodes)
+        # open_nodes[:0] = l_union(holding, open_nodes)
+        a = l_union(holding, open_nodes)
+        print(a)
+        open_nodes.extend(l_union(holding, open_nodes))
+        # open_nodes[0:] = l_union(holding, open_nodes)
+
+    return []
+
+
+    # util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
