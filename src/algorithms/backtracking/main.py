@@ -21,10 +21,10 @@ graph = {
     "Y": []
 }
 
-children = ["A", "B", "C", "D"]
-d = ["A"]
-s = ["B"]
-nsl = ["C"]
+# children = ["A", "B", "C", "D"]
+# d = ["A"]
+# s = ["B"]
+# nsl = ["C"]
 
 def l_difference(*args):
     if not(all([isinstance(i, list) for i in args])):
@@ -47,6 +47,18 @@ def l_union(a: list, b: list):
        raise ValueError('two lists please')
     return [x for x in a if x not in b]
 
+def strip_containers(container: list, subdomains: list):
+    subcontainer = []
+    exit = False
+    for element in container:
+        for destination in subdomains:
+            if(element in destination):
+                exit = True
+        if(not exit):
+            subcontainer.append(element)
+        exit = False
+    return subcontainer
+
 def backtracking(starting: str, GD: list) -> list:
     if(not isinstance(starting, str) or
        not isinstance(GD, list)):
@@ -55,11 +67,41 @@ def backtracking(starting: str, GD: list) -> list:
     state_list, new_state_list = [starting], [starting]
     dead_ends = []
     current_state = starting
-    if(current_state in GD):
-        return state_list
+    max_depth, iterations = 100, 0
 
-    children = graph[current_state]
-    if(not children)
+    while(new_state_list and iterations <= max_depth):
+        iterations+=1
+        if(current_state in GD):
+            return state_list
+
+        children = strip_containers(graph[current_state], [dead_ends, state_list, new_state_list])
+        print(children)
+        print(state_list)
+        # children = l_union(graph[current_state],
+                            # l_union(new_state_list, l_union(dead_ends, state_list)))
+        if(not children):
+            while((state_list) and (current_state == state_list[0])):
+                dead_ends.append(current_state)
+                state_list.pop()
+                current_state = new_state_list.pop()
+                # current_state = new_state_list.pop()
+                # current_state = new_state_list[0]
+            state_list.insert(0, current_state)
+            # state_list.append(current_state)
+        else:
+            new_state_list[:0] = children
+            # new_state_list.extend(children)
+            # current_state = new_state_list.pop()
+            current_state = new_state_list[0]
+            # state_list.append(current_state)
+            state_list.insert(0, current_state)
+
+    if(iterations >= max_depth):
+        print(f'[ERROR] Max recursion depth exceeded of {max_depth}, cowardly refusing to proceed')
+    return []
+
+resultant = backtracking("A", ["X"])
+print(resultant)
 
 # open_nodes = ["A"]
 
@@ -69,20 +111,20 @@ def backtracking(starting: str, GD: list) -> list:
 # current_state = "A"
 # goal_states = ["X"]
 
-while(state_list):
-    # current_state = state_list.pop()
-    print(current_state)
-    if(current_state in goal_states):
-        print(f'[complete] {state_list}') # should be return
-    children = graph[current_state]
-    if(not children):
-        while(state_list and current_state == state_list[0]):
-            dead_ends.append(current_state)
-            state_list.pop()
-            new_state_list.pop()
-            current_state = new_state_list[0]
-        state_list.append(current_state)
-    else:
-        new_state_list.extend(children)
-        current_state = new_state_list[0]
-        state_list.append(current_state)
+# while(state_list):
+    # # current_state = state_list.pop()
+    # print(current_state)
+    # if(current_state in goal_states):
+        # print(f'[complete] {state_list}') # should be return
+    # children = graph[current_state]
+    # if(not children):
+        # while(state_list and current_state == state_list[0]):
+            # dead_ends.append(current_state)
+            # state_list.pop()
+            # new_state_list.pop()
+            # current_state = new_state_list[0]
+        # state_list.append(current_state)
+    # else:
+        # new_state_list.extend(children)
+        # current_state = new_state_list[0]
+        # state_list.append(current_state)

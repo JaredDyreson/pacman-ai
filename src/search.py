@@ -94,7 +94,7 @@ def depthFirstSearch(problem):
     paths = [] # stack based approach
     dead_ends = []
 
-    depth_limit = 100
+    depth_limit = 15
     iterations = 0
 
     while(open_nodes):                                    #While there's no open nodes
@@ -126,7 +126,7 @@ def depthFirstSearch(problem):
 
             dead_ends.insert(0, current_node)
 
-        if(current_node != problem.getStartState() and successors and current_path):
+        if(current_node != problem.getStartState() and successors and current_path and current_path not in paths):
             paths.append(current_path)
 
         for state in successors:
