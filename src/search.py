@@ -113,7 +113,10 @@ def depthFirstSearch(problem):
         if(problem.isGoalState(current_node)):                  #If current_node is a goal then return the NODE
             answer_path.append(current_path)
             return answer_path
+
         if(current_node in dead_ends):
+            print("got here")
+            answer_path.pop(0)
             continue
 
         # entry point
@@ -127,6 +130,7 @@ def depthFirstSearch(problem):
             # the above if statement does a pre-check to ensure we are not discarding a goal node
 
             dead_ends.insert(0, current_node)
+            continue
 
         if(current_node != problem.getStartState() and
             successors and
