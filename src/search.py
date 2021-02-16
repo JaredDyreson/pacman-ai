@@ -90,7 +90,7 @@ def depthFirstSearch(problem):
     current_path    = None
     open_nodes = [(problem.getStartState(), None)]
 
-    closed_nodes = [] #
+    closed_nodes = []
     answer_path = [] # return me
 
     while(open_nodes != []):                                            #While there's no open nodes                         
@@ -100,8 +100,10 @@ def depthFirstSearch(problem):
             return answer_path
         successors = problem.getSuccessors(current_node)                #Otherwisem generate the children of current_node
         closed_nodes.append(current_node)                               #put current_node on closed
+
+        #If the current node isn't our starting node, has successors and is part of the current path
         if(current_node != problem.getStartState() and successors and current_path):
-            answer_path.append(current_path)
+            answer_path.append(current_path)                            #Add it to our answer_path
         
         temp = []
         for element in successors:
