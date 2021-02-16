@@ -86,25 +86,29 @@ def depthFirstSearch(problem):
 
     """
     "*** YOUR CODE HERE ***"
-    # TODO
-    current_node = None
-    open_nodes = [problem.getStartState()]
-    open_paths = []
-    closed = [] # return me
+    current_node    = None
+    current_path    = None
+    open_nodes = [(problem.getStartState(), None)]
 
-    while(open_nodes != []):                                    #While there's no open nodes
-        current_node = open_nodes.pop(0)                        #remove the leftmost state from open, call it current_node
-        if(problem.isGoalState(current_node)):                  #If current_node is a goal then return the NODE
-            return closed
-        container = problem.getSuccessors(current_node)         #Otherwisem generate the children of current_node
-        closed.append(current_node)                             #put current_node on closed
+    closed_nodes = [] #
+    answer_path = [] # return me
+
+    while(open_nodes != []):                                            #While there's no open nodes                         
+        current_node, current_path = open_nodes.pop(0)                  #remove the leftmost state from open, call it current_node
+        if(problem.isGoalState(current_node)):                          #If current_node is a goal then return the NODE
+            answer_path.append(current_path)
+            return answer_path
+        successors = problem.getSuccessors(current_node)                #Otherwisem generate the children of current_node
+        closed_nodes.append(current_node)                               #put current_node on closed
+        if(current_node != problem.getStartState() and successors and current_path):
+            answer_path.append(current_path)
+        
         temp = []
-        for element in container:
+        for element in successors:
             node, path, cost = element
-            if node not in open_nodes and node not in closed:   #discard children of current_node if already on open or closed
-                temp.insert(0, node)                            #put remaining children on left end of open
-        open_nodes[:0] = temp                                   # prepend the contents of the lookup while removing duplicates from both containers
-
+            if node not in open_nodes and node not in closed_nodes:     #discard children of current_node if already on open or closed
+                temp.insert(0, [node, path])
+        open_nodes[:0] = temp
     return []
 
 def breadthFirstSearch(problem):
