@@ -74,7 +74,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-def searchMeDaddy(problem, data_structure):
+def baseSearchFunction(problem, data_structure):
     answer_path = [] # return me
 
     # since these implementations are nearly identical
@@ -115,13 +115,13 @@ def searchMeDaddy(problem, data_structure):
 def depthFirstSearch(problem):
     """Search the deepest nodes in the search tree first."""
 
-    return searchMeDaddy(problem, util.Stack)
+    return baseSearchFunction(problem, util.Stack)
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
-    return searchMeDaddy(problem, util.Queue)
+    return baseSearchFunction(problem, util.Queue)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
