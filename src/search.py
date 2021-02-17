@@ -99,16 +99,16 @@ def depthFirstSearch(problem):
         return True
 
     def dfs(visited, node, answer_path, dead_ends):  #function for dfs 
-        print(node)
         current_node, current_path, cost = node
         if(current_node not in visited):
             if(problem.isGoalState(current_node)):
                 answer_path.append(current_path)
-                return
+                raise ValueError # very, very cheap way to halt recursive calls
 
             visited.append(current_node)
 
             children = problem.getSuccessors(current_node)
+            # print(f"called get successors of {current_node}")
 
             if(not answer_path):
                 parent = node
@@ -130,15 +130,19 @@ def depthFirstSearch(problem):
                (all_children_present(children, dead_ends) and node not in dead_ends) or
                parent in dead_ends):
                 dead_ends.append(answer_path.pop())
-            for neighbour in children:
+            for neighbour in children[::-1]: # iterate the list in reverse
                 dfs(visited, neighbour, answer_path, dead_ends)
+        return
 
-    dfs(visited, (problem.getStartState(), None, float('inf')), answer_path, dead_ends)
+    try:
+        dfs(visited, (problem.getStartState(), None, float('inf')), answer_path, dead_ends)
+    except ValueError:
+        pass # we don't care about you 
     return answer_path
 
 
 
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
