@@ -19,7 +19,6 @@ Pacman agents (in searchAgents.py).
 
 import util
 # user made functions
-from algorithms.dfs.main import l_union # list union
 
 
 class SearchProblem:
@@ -75,80 +74,54 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
+def searchMeDaddy(problem, data_structure):
+    answer_path = [] # return me
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+    # since these implementations are nearly identical
+    # we can just swich the data structure based on the order we retrieve our nodes
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
+    open_nodes = data_structure()
 
-    """
-    "*** YOUR CODE HERE ***"
+    open_nodes.push((problem.getStartState(), answer_path))
 
-    visited, open_nodes, answer_path, dead_ends = [], [], [], []
+    closed_nodes = []
 
-    def all_children_present(container: list, baseline: list):
-        if(not container):
-            return False
-        for x in container:
-            if(x not in baseline):
-                return False
-        return True
+    while(not open_nodes.isEmpty()):
+        # this will always happen, so we will not run into an infinite loop
+        current_node, answer_path = open_nodes.pop()
 
-    def dfs(visited, node, answer_path, dead_ends):  #function for dfs 
-        current_node, current_path, cost = node
-        if(current_node not in visited):
+        if(current_node not in closed_nodes):
+            # mark the current node as visited
+            # helps mitigate cylces
+
+            closed_nodes.append(current_node)
+
             if(problem.isGoalState(current_node)):
-                answer_path.append(current_path)
-                raise ValueError # very, very cheap way to halt recursive calls
+                return answer_path
 
-            visited.append(current_node)
+            # get all the children of the current node
+            successors = problem.getSuccessors(current_node)
 
-            children = problem.getSuccessors(current_node)
-            # print(f"called get successors of {current_node}")
+            for state in successors:
+                node, path, _ = state
+                if(node not in closed_nodes):
+                   # answer_path.append(path)
+                   # fam I have no idea why catenating them works but appending first and then inserting doesn't
+                   # but yeah know, I have done this way too much so i am going to call it voodoo and move on
+                   open_nodes.push((node, answer_path + [path]))
 
-            if(not answer_path):
-                parent = node
-            elif(len(answer_path) < 1 and answer_path):
-                parent = answer_path[0]
-            else:
-                parent = answer_path[-1]
-
-            if(parent in visited and
-               all_children_present(problem.getSuccessors(parent), dead_ends)):
-                answer_path.pop()
-
-            if(current_node != problem.getStartState() and
-               current_path):
-                answer_path.append(current_path)
-
-
-            if(not children or
-               (all_children_present(children, dead_ends) and node not in dead_ends) or
-               parent in dead_ends):
-                dead_ends.append(answer_path.pop())
-            for neighbour in children[::-1]: # iterate the list in reverse
-                dfs(visited, neighbour, answer_path, dead_ends)
-        return
-
-    try:
-        dfs(visited, (problem.getStartState(), None, float('inf')), answer_path, dead_ends)
-    except ValueError:
-        pass # we don't care about you 
     return answer_path
 
+def depthFirstSearch(problem):
+    """Search the deepest nodes in the search tree first."""
 
+    return searchMeDaddy(problem, util.Stack)
 
-    # util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
 
-    util.raiseNotDefined()
+    return searchMeDaddy(problem, util.Queue)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
