@@ -74,29 +74,70 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def baseSearchFunction(problem, data_structure):
+    """
+    Since the implementation of a Depth First Search and Breadth First Search
+    are nearly identical, we can simply switch the date structure based on the
+    order we recieve our nodes; i.e. change the direction we pop, push nodes.
+    """
+    # The path that takes us from the start node to the destination
+    answer_path = [] 
+
+    # Set the open_nodes data structure as either a Stack (DFS) or Queue (BFS)
+    open_nodes = data_structure()
+
+    # Add the starting state and the empty list to our open nodes
+    open_nodes.push((problem.getStartState(), answer_path))
+
+    # Initialize closed nodes to contain nothing
+    closed_nodes = []
+
+    # While there is at least one item in our open_nodes
+    while(not open_nodes.isEmpty()):
+        
+        # Assign current_node and answer_path to an element from one side of the list
+        current_node, answer_path = open_nodes.pop()
+
+        # If our current node isn't closed
+        if(current_node not in closed_nodes):
+            
+            # Add the current node to the set of closed nodes
+            closed_nodes.append(current_node)
+
+            # If we're at the destination
+            if(problem.isGoalState(current_node)):
+                # Return the path we used to get here
+                return answer_path
+
+            # Set successors equal to the children of the current node
+            successors = problem.getSuccessors(current_node)
+
+            # For each successor
+            for state in successors:
+                
+                #Set the node, path equal to the node and path of the state (We're not concerned about the cost)
+                node, path, _ = state
+
+                #If the current node isn't in the set of closed nodes
+                if(node not in closed_nodes):
+                    
+                   # Add the node and path to the set of open nodes
+                   open_nodes.push((node, answer_path + [path]))
+
+    #Return the 'best' answer_path we could find; If we're returning here, we didn't find the destination
+    return answer_path
+
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
+    """Search the deepest nodes in the search tree first."""
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
-
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
-
-    """
-    "*** YOUR CODE HERE ***"
-    # TODO
-    print("Start:", problem.getStartState()) # string, like dict look up
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState())) # string, like dict look up
-    print("Start's successors:", problem.getSuccessors(problem.getStartState())) # children
-
-    util.raiseNotDefined()
+    #Use a stack in order to perform a Depth First Search
+    return baseSearchFunction(problem, util.Stack)
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    #Use a Queue in order to perform a Breadth First Search
+    return baseSearchFunction(problem, util.Queue)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
