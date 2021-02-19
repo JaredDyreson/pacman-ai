@@ -75,52 +75,68 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def baseSearchFunction(problem, data_structure):
-    answer_path = [] # return me
+    """
+    Since the implementation of a Depth First Search and Breadth First Search
+    are nearly identical, we can simply switch the date structure based on the
+    order we recieve our nodes; i.e. change the direction we pop, push nodes.
+    """
+    # The path that takes us from the start node to the destination
+    answer_path = [] 
 
-    # since these implementations are nearly identical
-    # we can just swich the data structure based on the order we retrieve our nodes
-
+    # Set the open_nodes data structure as either a Stack (DFS) or Queue (BFS)
     open_nodes = data_structure()
 
+    # Add the starting state and the empty list to our open nodes
     open_nodes.push((problem.getStartState(), answer_path))
 
+    # Initialize closed nodes to contain nothing
     closed_nodes = []
 
+    # While there is at least one item in our open_nodes
     while(not open_nodes.isEmpty()):
-        # this will always happen, so we will not run into an infinite loop
+        
+        # Assign current_node and answer_path to an element from one side of the list
         current_node, answer_path = open_nodes.pop()
 
+        # If our current node isn't closed
         if(current_node not in closed_nodes):
-            # mark the current node as visited
-            # helps mitigate cylces
-
+            
+            # Add the current node to the set of closed nodes
             closed_nodes.append(current_node)
 
+            # If we're at the destination
             if(problem.isGoalState(current_node)):
+                # Return the path we used to get here
                 return answer_path
 
-            # get all the children of the current node
+            # Set successors equal to the children of the current node
             successors = problem.getSuccessors(current_node)
 
+            # For each successor
             for state in successors:
+                
+                #Set the node, path equal to the node and path of the state (We're not concerned about the cost)
                 node, path, _ = state
+
+                #If the current node isn't in the set of closed nodes
                 if(node not in closed_nodes):
-                   # answer_path.append(path)
-                   # fam I have no idea why catenating them works but appending first and then inserting doesn't
-                   # but yeah know, I have done this way too much so i am going to call it voodoo and move on
+                    
+                   # Add the node and path to the set of open nodes
                    open_nodes.push((node, answer_path + [path]))
 
+    #Return the 'best' answer_path we could find; If we're returning here, we didn't find the destination
     return answer_path
 
 def depthFirstSearch(problem):
     """Search the deepest nodes in the search tree first."""
 
+    #Use a stack in order to perform a Depth First Search
     return baseSearchFunction(problem, util.Stack)
-
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
+    #Use a Queue in order to perform a Breadth First Search
     return baseSearchFunction(problem, util.Queue)
 
 def uniformCostSearch(problem):
