@@ -171,52 +171,47 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     h_n = INF  # Cost to destination
 
     state = problem.getStartState()
-    open_set = util.Stack()
+    open_set = util.PriorityQueue()
 
     # state - element we're at
-    open_set.push([state, 'NONE', g_n])
+    open_set.push([state, 'NONE', g_n], 0)
+
     came_from = {}
 
-    nextState = []
     solution = []
 
-    # While we're not at the destination and haven't 'timed out'
-    while runs < 10 and not open_set.isEmpty():
-        f_n = INF  # assume the worst and cannot reach the destination
+    # For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
+    # how short a path from start to finish can be if it goes through n.
 
-        # Unpack the current state and g_n
-        state, direction, g_n = open_set.pop()
+    # fScore := map with default value of Infinity
+    # fScore[start] := h(start)
 
-        if(problem.isGoalState(state)):
-            print("found the goal")
-            solution.append(direction)
+    f_score = {
+        state: g_n
+    }
+
+    g_score = {
+        state: 0
+    }
+
+    while(not open_set.isEmpty()):
+        node, direction, cost = open_set.pop()
+        if(problem.isGoalState(node)):
             break
 
-        # Get the current node's successors
-        successors = problem.getSuccessors(state)
+        for neighbor in problem.getSuccessors(node):
+            neighor_node, neighbor_direction, neighbor_cost = neighbor
+            tentative_g_score = g_score[node] + cost
 
-        for successor in successors:
-            node, direction, cost = successor
-            # Update successor's g(n) by adding the cost taken to get there from the previous state
-            g_n += cost
+            if(tentative_g_score < neighbor_cost):
+                solution.append(neighbor_direction)
+                g_score[neighor_node] = tentative_g_score
+                f_score[neighor_node] = g_score[neighor_node] + \
+                    heuristic(neighor_node, problem)
+                if(neighor_node not in open_set.heap):
+                    open_set.push(
+                        [neighor_node, neighbor_direction, neighbor_cost], 0)
 
-            # Get the cost from a particular successor to the destination
-            h_n = heuristic(node, problem)
-
-            # determine f_n for that successor
-            # If we've found a path from the start to the destination and it's less than our current best
-            if (h_n != INF and g_n != INF) and ((g_n + h_n < f_n) or (f_n == INF)):
-                f_n = g_n + h_n
-                open_set.push([node, direction, g_n])
-                solution.append(direction)
-
-        # Update our next state
-
-        # Decide which route to take by checking
-        runs += 1
-
-    # Return an empty solution
-    print(state)
     return solution
 
 
