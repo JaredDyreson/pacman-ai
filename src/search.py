@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,7 +18,6 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
-# user made functions
 
 
 class SearchProblem:
@@ -72,89 +71,153 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
 
-def baseSearchFunction(problem, data_structure):
-    """
-    Since the implementation of a Depth First Search and Breadth First Search
-    are nearly identical, we can simply switch the date structure based on the
-    order we recieve our nodes; i.e. change the direction we pop, push nodes.
-    """
-    # The path that takes us from the start node to the destination
-    answer_path = [] 
-
-    # Set the open_nodes data structure as either a Stack (DFS) or Queue (BFS)
-    open_nodes = data_structure()
-
-    # Add the starting state and the empty list to our open nodes
-    open_nodes.push((problem.getStartState(), answer_path))
-
-    # Initialize closed nodes to contain nothing
-    closed_nodes = []
-
-    # While there is at least one item in our open_nodes
-    while(not open_nodes.isEmpty()):
-        
-        # Assign current_node and answer_path to an element from one side of the list
-        current_node, answer_path = open_nodes.pop()
-
-        # If our current node isn't closed
-        if(current_node not in closed_nodes):
-            
-            # Add the current node to the set of closed nodes
-            closed_nodes.append(current_node)
-
-            # If we're at the destination
-            if(problem.isGoalState(current_node)):
-                # Return the path we used to get here
-                return answer_path
-
-            # Set successors equal to the children of the current node
-            successors = problem.getSuccessors(current_node)
-
-            # For each successor
-            for state in successors:
-                
-                #Set the node, path equal to the node and path of the state (We're not concerned about the cost)
-                node, path, _ = state
-
-                #If the current node isn't in the set of closed nodes
-                if(node not in closed_nodes):
-                    
-                   # Add the node and path to the set of open nodes
-                   open_nodes.push((node, answer_path + [path]))
-
-    #Return the 'best' answer_path we could find; If we're returning here, we didn't find the destination
-    return answer_path
 
 def depthFirstSearch(problem):
-    """Search the deepest nodes in the search tree first."""
+    """
+    Search the deepest nodes in the search tree first.
 
-    #Use a stack in order to perform a Depth First Search
-    return baseSearchFunction(problem, util.Stack)
+    Your search algorithm needs to return a list of actions that reaches the
+    goal. Make sure to implement a graph search algorithm.
+
+    To get started, you might want to try some of these simple commands to
+    understand the search problem that is being passed in:
+
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    """
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    util.raiseNotDefined()
 
-    #Use a Queue in order to perform a Breadth First Search
-    return baseSearchFunction(problem, util.Queue)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
-def nullHeuristic(state, problem=None):
+# Takes 2 arguments: a state in the search problem (main argument), and the problem itself (for reference information).
+# Returns the estimated least cost from the current state to the destination
+
+
+def nullHeuristic(state, problem):
     """
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
-    return 0
+
+    INF = -1  # -1 will signify the distance from the destination if it is not determined
+    FOUND = 0
+
+    # find h(n) - Perform a manhattan search (sum the distance we are from a goal state)
+    h_n, min_val = INF, INF
+    pair = []
+
+    # Get this node's successors
+    successors = problem.getSuccessors(state)
+
+    # For each successor
+    for successor in successors:
+        node, direction, cost = successor
+        if(min_val == INF):  # at the beginning of the list
+            min_val = cost
+        # If the problem is a goal state
+        if problem.isGoalState(node):
+            # Set the distance from the goal state to zero
+            h_n = FOUND
+            break
+        else:
+            # Else, find out the shortest distance from those successors to the goal state
+            min_val = cost if(cost < min_val) else min_val
+            pair = [f'{node}', cost]
+            print(pair)
+    h_n = min_val if(h_n != FOUND) else FOUND
+    if(len(pair) == 2):
+        node, _ = pair
+    else:
+        node = None
+    print(f'{state} -> {node} has a heuristic of {min_val}')
+    # h_n = min_val
+    return h_n
+
+# A* takes a heuristic function as an argument
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    """
+    f(n) = g(n) + h(n)
+    g(n) is the distance or cost from the start to current state, n
+    h(n) is an estimate of the measure from state n to a goal
+    h(n) guides search towards heuristically promising states, g(n) prevents search from indefinitely fruitless path
+    """
+
+    # problem - a tuple containing each index, [destination, direction, cost].
+
+    INF = -1  # -1 will signify the distance from the destination if it is not determined
+    runs = 0  # debugging
+
+    # Set g(n) and h(n) for the starting state
+    g_n = 0  # Cost from start
+    h_n = INF  # Cost to destination
+
+    state = problem.getStartState()
+    open_set = util.Stack()
+
+    # state - element we're at
+    open_set.push([state, 'NONE', g_n])
+    came_from = {}
+
+    nextState = []
+    solution = []
+
+    # While we're not at the destination and haven't 'timed out'
+    while runs < 10 and not open_set.isEmpty():
+        f_n = INF  # assume the worst and cannot reach the destination
+
+        # Unpack the current state and g_n
+        state, direction, g_n = open_set.pop()
+
+        if(problem.isGoalState(state)):
+            print("found the goal")
+            solution.append(direction)
+            break
+
+        # Get the current node's successors
+        successors = problem.getSuccessors(state)
+
+        for successor in successors:
+            node, direction, cost = successor
+            # Update successor's g(n) by adding the cost taken to get there from the previous state
+            g_n += cost
+
+            # Get the cost from a particular successor to the destination
+            h_n = heuristic(node, problem)
+
+            # determine f_n for that successor
+            # If we've found a path from the start to the destination and it's less than our current best
+            if (h_n != INF and g_n != INF) and ((g_n + h_n < f_n) or (f_n == INF)):
+                f_n = g_n + h_n
+                open_set.push([node, direction, g_n])
+                solution.append(direction)
+
+        # Update our next state
+
+        # Decide which route to take by checking
+        runs += 1
+
+    # Return an empty solution
+    print(state)
+    return solution
 
 
 # Abbreviations
